@@ -1,6 +1,31 @@
 const request = require("request");
+const fetchISSFlyOverTimes = function(coords, callback) {
+  const url = `http://api.open-notify.org/iss-pass.json?lat=${coords.latitude}&lon=${coords.longitude}`;
 
-// Fetch Geo Coordinates by IP
+  request(url, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+
+    if (response.statusCode !== 200) {
+      callback(
+        Error(
+          `Status Code ${response.statusCode} when fetching ISS pass times: ${body}`
+        ),
+        null
+      );
+      return;
+    }
+
+    const passes = JSON.parse(body).response;
+    callback(null, passes);
+  });
+};
+
+module.exports = { fetchISSFlyOverTimes };
+/*
+STEP 2: Fetch Geo Coordinates by IP
 const fetchCoordsByIP = function(ip, callback) {
   request(`https://ipvigilante.com/json/${ip}`, (error, response, body) => {
     if (error) {
@@ -10,7 +35,7 @@ const fetchCoordsByIP = function(ip, callback) {
     if (response.statusCode !== 200) {
       callback(
         Error(
-          `Status Code ${response.statusCode} when fetching Coordinates for I{: ${body}}`
+          `Status Code ${response.statusCode} when fetching Coordinates for IP{: ${body}}`
         ),
         null
       );
@@ -22,7 +47,7 @@ const fetchCoordsByIP = function(ip, callback) {
 };
 
 module.exports = { fetchCoordsByIP };
-/*
+
  STEP 1: Fetching IP Address
  * Makes a single API request to retrieve the user's IP address.
  * Input:
@@ -48,5 +73,5 @@ const fetchMyIP = function(callback) {
     callback(null, ip);
   });
 };
-
+module.exports = { fetchMyIP }
 */
